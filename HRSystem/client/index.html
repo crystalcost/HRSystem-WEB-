@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR System - Управление персоналом</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <div class="container">
+                <h1 class="logo">HR System</h1>
+                <nav class="nav" id="main-nav" style="display: none;">
+                </nav>
+                <div class="user-info" id="user-info" style="display: none;">
+                    <span id="username-display"></span>
+                    <button id="logout-btn" class="btn btn-secondary">Выйти</button>
+                </div>
+            </div>
+        </header>
+        <main class="main">
+            <div class="container">
+                <!-- Auth -->
+                <div id="auth-view" class="view active">
+                    <div class="auth-container">
+                        <div class="auth-tabs">
+                            <button class="tab-btn active" data-tab="login">Вход</button>
+                            <button class="tab-btn" data-tab="register">Регистрация</button>
+                        </div>
+                        <div id="login-tab" class="tab-content active">
+                            <form id="login-form" class="auth-form">
+                                <h2>Вход в систему</h2>
+                                <div class="form-group">
+                                    <label for="login-username">Логин:</label>
+                                    <input type="text" id="login-username" name="username" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="login-password">Пароль:</label>
+                                    <input type="password" id="login-password" name="password" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Войти</button>
+                            </form>
+                        </div>
+                        <div id="register-tab" class="tab-content">
+                            <form id="register-form" class="auth-form">
+                                <h2>Регистрация</h2>
+                                <div class="form-group">
+                                    <label for="reg-username">Логин:</label>
+                                    <input type="text" id="reg-username" name="username" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="reg-password">Пароль:</label>
+                                    <input type="password" id="reg-password" name="password" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="reg-email">Email:</label>
+                                    <input type="email" id="reg-email" name="email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="reg-firstname">Имя:</label>
+                                    <input type="text" id="reg-firstname" name="firstName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="reg-lastname">Фамилия:</label>
+                                    <input type="text" id="reg-lastname" name="lastName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="reg-role">Роль:</label>
+                                    <select id="reg-role" name="roleId" required>
+                                        <option value="3">EMPLOYEE</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- Dashboard -->
+                <div id="dashboard-view" class="view">
+                    <div class="dashboard">
+                        <h2>Панель управления</h2>
+                        <div class="welcome-message">
+                            Добро пожаловать, <span id="welcome-username"></span>!
+                        </div>
+                        <div class="dashboard-grid" id="dashboard-grid">
+                        </div>
+                    </div>
+                </div>
+                <!-- Users Management -->
+                <div id="users-view" class="view">
+                    <div class="section">
+                        <h2>Управление пользователями</h2>
+                        <div class="toolbar">
+                            <button id="add-user-btn" class="btn btn-primary">Добавить пользователя</button>
+                            <input type="text" id="user-search" placeholder="Поиск пользователей...">
+                        </div>
+                        <div class="table-container">
+                            <table id="users-table" class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Логин</th>
+                                        <th>Имя</th>
+                                        <th>Фамилия</th>
+                                        <th>Email</th>
+                                        <th>Роль</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-tbody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- Evaluations -->
+                <div id="evaluations-view" class="view">
+                    <div class="section">
+                        <h2>Оценки сотрудников</h2>
+                        <div class="toolbar">
+                            <button id="add-evaluation-btn" class="btn btn-primary">Добавить оценку</button>
+                            <select id="employee-filter">
+                                <option value="">Все сотрудники</option>
+                            </select>
+                        </div>
+                        <div class="table-container">
+                            <table id="evaluations-table" class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Сотрудник</th>
+                                        <th>Менеджер</th>
+                                        <th>Общий KPI</th>
+                                        <th>Дата оценки</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="evaluations-tbody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- Feedback -->
+                <div id="feedback-view" class="view">
+                    <div class="section">
+                        <h2>Отзывы и обратная связь</h2>
+                        <div class="toolbar">
+                            <button id="add-feedback-btn" class="btn btn-primary">Добавить отзыв</button>
+                            <select id="evaluation-filter">
+                                <option value="">Все оценки</option>
+                            </select>
+                        </div>
+                        <div class="table-container">
+                            <table id="feedback-table" class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Оценка</th>
+                                        <th>Текст отзыва</th>
+                                        <th>Дата создания</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="feedback-tbody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- Self Assessment -->
+                <div id="self-assessment-view" class="view">
+                    <div class="section">
+                        <h2>Самооценка навыков</h2>
+                        <div class="assessment-form">
+                            <div class="form-group">
+                                <label for="assessment-skill">Навык:</label>
+                                <select id="assessment-skill">
+                                    <option value="Коммуникация">Коммуникация</option>
+                                    <option value="Технические навыки">Технические навыки</option>
+                                    <option value="Управление временем">Управление временем</option>
+                                    <option value="Работа в команде">Работа в команде</option>
+                                    <option value="Решение проблем">Решение проблем</option>
+                                    <option value="Лидерство">Лидерство</option>
+                                    <option value="Креативность">Креативность</option>
+                                    <option value="Адаптивность">Адаптивность</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="assessment-level">Уровень (1-10):</label>
+                                <input type="number" id="assessment-level" min="1" max="10" value="5">
+                            </div>
+                            <button id="submit-assessment" class="btn btn-primary">Отправить самооценку</button>
+                        </div>
+                        <div class="table-container">
+                            <table id="assessments-table" class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Навык</th>
+                                        <th>Уровень</th>
+                                        <th>Дата оценки</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="assessments-tbody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- Training -->
+                <div id="training-view" class="view">
+                    <div class="section">
+                        <h2>Заявки на обучение</h2>
+                        <div class="toolbar">
+                            <button id="add-training-btn" class="btn btn-primary">Подать заявку</button>
+                        </div>
+                        <div class="training-form" style="display: none;" id="training-form">
+                            <div class="form-group">
+                                <label for="training-course">Название курса:</label>
+                                <input type="text" id="training-course" placeholder="Введите название курса">
+                            </div>
+                            <button id="submit-training" class="btn btn-primary">Отправить заявку</button>
+                            <button id="cancel-training" class="btn btn-secondary">Отмена</button>
+                        </div>
+                        <div class="table-container">
+                            <table id="training-table" class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Курс</th>
+                                        <th>Сотрудник</th>
+                                        <th>Статус</th>
+                                        <th>Дата подачи</th>
+                                        <th>Длительность</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="training-tbody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- IDP Manager -->
+                <div id="idp-manager-view" class="view">
+                    <div class="section">
+                        <h2>IDP - Обучение на основе KPI</h2>
+                        <div id="idp-manager-content">
+                        </div>
+                    </div>
+                </div>
+                <!-- Progress Monitoring -->
+                <div id="progress-monitoring-view" class="view">
+                    <div class="section">
+                        <h2>Мониторинг прогресса сотрудников</h2>
+                        <div id="progress-monitoring-content">
+                        </div>
+                    </div>
+                </div>
+                <!-- Profile -->
+                <div id="profile-view" class="view">
+                    <div class="section">
+                        <h2>Личный кабинет</h2>
+                        <div class="profile-info">
+                            <form id="profile-form">
+                                <div class="form-group">
+                                    <label for="profile-username">Логин:</label>
+                                    <input type="text" id="profile-username" name="username" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="profile-firstname">Имя:</label>
+                                    <input type="text" id="profile-firstname" name="firstName">
+                                </div>
+                                <div class="form-group">
+                                    <label for="profile-lastname">Фамилия:</label>
+                                    <input type="text" id="profile-lastname" name="lastName">
+                                </div>
+                                <div class="form-group">
+                                    <label for="profile-email">Email:</label>
+                                    <input type="email" id="profile-email" name="email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="profile-role">Роль:</label>
+                                    <input type="text" id="profile-role" name="role" readonly>
+                                </div>
+                                <div id="profile-update-actions" class="form-actions" style="display: none; margin-top: 2rem;">
+                                    <button type="submit" class="btn btn-primary">Обновить данные</button>
+                                    <button type="button" id="cancel-profile-edit" class="btn btn-secondary">Сброс</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="password-change">
+                            <h3>Смена пароля</h3>
+                            <div class="form-group">
+                                <label for="current-password">Текущий пароль:</label>
+                                <input type="password" id="current-password">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-password">Новый пароль:</label>
+                                <input type="password" id="new-password">
+                            </div>
+                            <div class="form-group">
+                                <label for="confirm-password">Подтвердите пароль:</label>
+                                <input type="password" id="confirm-password">
+                            </div>
+                            <button id="change-password" class="btn btn-primary">Сменить пароль</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer id="main-footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <p>&copy; 2025 HR System. Все права защищены.</p>
+                </div>
+                <div class="footer-section" id="employee-footer-links">
+                </div>
+                <div class="footer-section">
+                    <p>Версия 1.0.0</p>
+                </div>
+            </div>
+        </footer>
+        <!-- Modal -->
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="modal-body">
+                </div>
+            </div>
+        </div>
+        <!-- Notification -->
+        <div id="notification" class="notification hidden">
+            <span id="notification-message"></span>
+        </div>
+    </div>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

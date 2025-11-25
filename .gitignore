@@ -1,0 +1,39 @@
+# Логи
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Директории
+node_modules/
+dist/
+build/
+.env
+
+# Файлы окружения
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Кэш
+.cache/
+.parcel-cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Базы данных
+*.sqlite
+*.db
+
+# Временные файлы
+tmp/
+temp/

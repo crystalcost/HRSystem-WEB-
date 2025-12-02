@@ -37,7 +37,9 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="login-password">Пароль:</label>
-                                    <input type="password" id="login-password" name="password" required>
+                                    <div class="password-input-container">
+                                        <input type="password" id="login-password" name="password" required>
+                                    </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Войти</button>
                             </form>
@@ -51,7 +53,15 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="reg-password">Пароль:</label>
-                                    <input type="password" id="reg-password" name="password" required>
+                                    <div class="password-input-container">
+                                        <input type="password" id="reg-password" name="password" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="reg-confirm-password">Подтвердите пароль:</label>
+                                    <div class="password-input-container">
+                                        <input type="password" id="reg-confirm-password" name="confirmPassword" required>
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="reg-email">Email:</label>
@@ -91,20 +101,37 @@
                 <div id="users-view" class="view">
                     <div class="section">
                         <h2>Управление пользователями</h2>
-                        <div class="toolbar">
-                            <button id="add-user-btn" class="btn btn-primary">Добавить пользователя</button>
-                            <input type="text" id="user-search" placeholder="Поиск пользователей...">
+                        <div class="toolbar expanded-toolbar">
+                            <div class="toolbar-left">
+                                <button id="add-user-btn" class="btn btn-primary">Добавить пользователя</button>
+                            </div>
+                            <div class="toolbar-right">
+                                <div class="filter-group">
+                                    <input type="text" id="user-search" placeholder="Поиск по всем полям...">
+                                </div>
+                                <div class="filter-group">
+                                    <select id="role-filter">
+                                        <option value="">Все роли</option>
+                                        <option value="ADMIN">ADMIN</option>
+                                        <option value="MANAGER">MANAGER</option>
+                                        <option value="EMPLOYEE">EMPLOYEE</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="search-info" class="search-info" style="margin-bottom: 1rem; color: #666; font-size: 0.9rem;">
+                            Загрузка...
                         </div>
                         <div class="table-container">
                             <table id="users-table" class="data-table">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
-                                        <th>Логин</th>
-                                        <th>Имя</th>
-                                        <th>Фамилия</th>
-                                        <th>Email</th>
-                                        <th>Роль</th>
+                                        <th data-sort="id" class="sortable">ID</th>
+                                        <th data-sort="username" class="sortable">Логин</th>
+                                        <th data-sort="firstName" class="sortable">Имя</th>
+                                        <th data-sort="lastName" class="sortable">Фамилия</th>
+                                        <th data-sort="email" class="sortable">Email</th>
+                                        <th data-sort="roleName" class="sortable">Роль</th>
                                         <th>Действия</th>
                                     </tr>
                                 </thead>
@@ -295,15 +322,21 @@
                             <h3>Смена пароля</h3>
                             <div class="form-group">
                                 <label for="current-password">Текущий пароль:</label>
-                                <input type="password" id="current-password">
+                                <div class="password-input-container">
+                                    <input type="password" id="current-password" placeholder="Введите текущий пароль">
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="new-password">Новый пароль:</label>
-                                <input type="password" id="new-password">
+                                <div class="password-input-container">
+                                    <input type="password" id="new-password" placeholder="Введите новый пароль">
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="confirm-password">Подтвердите пароль:</label>
-                                <input type="password" id="confirm-password">
+                                <div class="password-input-container">
+                                    <input type="password" id="confirm-password" placeholder="Подтвердите новый пароль">
+                                </div>
                             </div>
                             <button id="change-password" class="btn btn-primary">Сменить пароль</button>
                         </div>
@@ -319,7 +352,7 @@
                 <div class="footer-section" id="employee-footer-links">
                 </div>
                 <div class="footer-section">
-                    <p>Версия 1.0.0</p>
+                    <p>Почта для связи: whythecrystal@gmail.com</p>
                 </div>
             </div>
         </footer>

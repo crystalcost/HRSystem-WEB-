@@ -9,8 +9,6 @@ export class User {
     this.email = userData.email;
     this.firstName = userData.first_name || userData.firstName;
     this.lastName = userData.last_name || userData.lastName;
-    
-    // Правильное формирование объекта роли
     this.role = {
       role_id: userData.role_id,
       role_name: userData.role_name || userData.role,

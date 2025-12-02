@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { User } from '../models/User.js';
 import { query } from '../config/Database.js';
+import { generateToken } from '../middleware/Auth.js';
 
 export class AuthService {
   async register(registerRequest) {
@@ -36,15 +37,16 @@ export class AuthService {
       });
 
       await user.save();
+      const token = generateToken(user.id, user.username, user.role?.role_name);
 
       return {
         status: 'SUCCESS',
         userId: user.id,
+        token: token,
         message: 'Пользователь успешно зарегистрирован'
       };
-
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('Ошибка регистрации пользователя:', error);
       return { status: 'FAILED', message: error.message };
     }
   }
@@ -61,20 +63,20 @@ export class AuthService {
       if (!isValidPassword) {
         return { status: 'FAILED', message: 'Неверные имя пользователя или пароль' };
       }
+      
       if (!user.role || !user.role.role_name) {
-        console.error('User role is missing:', user);
         return { status: 'FAILED', message: 'Ошибка данных пользователя' };
       }
-
+      const token = generateToken(user.id, user.username, user.role.role_name);
       return {
         status: 'SUCCESS',
         userId: user.id,
         role: user.role.role_name,
-        username: user.username
+        username: user.username,
+        token: token
       };
-
     } catch (error) {
-      console.error('Authentication error:', error);
+      console.error('Ошибка аутентификации:', error);
       return { status: 'FAILED', message: error.message };
     }
   }

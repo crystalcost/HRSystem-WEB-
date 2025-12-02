@@ -15,9 +15,8 @@ export const login = async (req, res) => {
 
     const response = await authService.authenticate(username, password);
     res.json(response);
-
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('Ошибка входа:', error);
     res.status(500).json({
       status: 'FAILED',
       message: error.message
@@ -29,9 +28,7 @@ export const register = async (req, res) => {
   try {
     const response = await authService.register(req.body);
     res.json(response);
-
   } catch (error) {
-    console.error('Register error:', error);
     res.status(500).json({
       status: 'FAILED',
       message: error.message

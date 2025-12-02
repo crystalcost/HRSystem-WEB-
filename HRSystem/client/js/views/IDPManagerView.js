@@ -7,9 +7,6 @@ export class IDPManagerView extends BaseView {
         this.onEmployeeSelect = null;
     }
 
-    initialize() {
-    }
-
     renderIDPManager(employees) {
         const container = this.container?.querySelector('#idp-manager-content');
         if (!container) return;
@@ -32,13 +29,9 @@ export class IDPManagerView extends BaseView {
                 </div>
 
                 <div class="employee-data-section" id="employee-data-section" style="display: none;">
-                    <!-- Данные сотрудника будут загружены здесь -->
                 </div>
             </div>
         `;
-
-        
-        this.bindEmployeeSelectHandler(this.onEmployeeSelect);
     }
 
     showEmployeeData(employee, evaluations, recommendedCourses, trainingRequests) {
@@ -79,10 +72,7 @@ export class IDPManagerView extends BaseView {
                 ${this.renderTrainingRequests(trainingRequests)}
             </div>
         `;
-
         section.style.display = 'block';
-
-        
         section.querySelectorAll('.use-recommendation-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const courseName = e.target.dataset.courseName;
@@ -90,22 +80,15 @@ export class IDPManagerView extends BaseView {
                     courseName: courseName,
                     comments: 'Рекомендовано системой на основе оценок KPI'
                 };
-                
-                if (this.onCreateTrainingRequest) {
-                    this.onCreateTrainingRequest(courseData);
-                }
+                if (this.onCreateTrainingRequest) this.onCreateTrainingRequest(courseData);
             });
         });
     }
 
     renderEvaluationsTable(evaluations) {
-        if (evaluations.length === 0) {
-            return '<p class="no-data">Нет данных об оценках</p>';
-        }
+        if (evaluations.length === 0) return '<p class="no-data">Нет данных об оценках</p>';
 
-        const sortedEvaluations = [...evaluations].sort((a, b) => 
-            new Date(b.evaluationDate) - new Date(a.evaluationDate)
-        );
+        const sortedEvaluations = [...evaluations].sort((a, b) => new Date(b.evaluationDate) - new Date(a.evaluationDate));
 
         return `
             <div class="table-container">
@@ -144,9 +127,7 @@ export class IDPManagerView extends BaseView {
     }
 
     renderRecommendedCourses(recommendedCourses) {
-        if (recommendedCourses.length === 0) {
-            return '<p class="no-data">Нет рекомендаций по обучению на основе текущих оценок</p>';
-        }
+        if (recommendedCourses.length === 0) return '<p class="no-data">Нет рекомендаций по обучению на основе текущих оценок</p>';
 
         return `
             <div class="recommended-courses-list">
@@ -167,9 +148,7 @@ export class IDPManagerView extends BaseView {
     }
 
     renderTrainingRequests(trainingRequests) {
-        if (trainingRequests.length === 0) {
-            return '<p class="no-data">Нет активных заявок на обучение</p>';
-        }
+        if (trainingRequests.length === 0) return '<p class="no-data">Нет активных заявок на обучение</p>';
 
         return `
             <div class="training-requests-list">
@@ -204,12 +183,9 @@ export class IDPManagerView extends BaseView {
         this.onEmployeeSelect = handler;
         const select = this.container?.querySelector('#idp-employee-select');
         if (select && handler) {
-            
             select.replaceWith(select.cloneNode(true));
             const newSelect = this.container?.querySelector('#idp-employee-select');
-            newSelect.addEventListener('change', (e) => {
-                handler(e.target.value);
-            });
+            newSelect.addEventListener('change', (e) => handler(e.target.value));
         }
     }
 
@@ -224,12 +200,9 @@ export class IDPManagerView extends BaseView {
 
     showLoading(loading) {
         const container = this.container?.querySelector('#idp-manager-content');
-        if (container) {
-            if (loading) {
-                container.classList.add('loading');
-            } else {
-                container.classList.remove('loading');
-            }
-        }
+        if (container) loading ? container.classList.add('loading') : container.classList.remove('loading');
+    }
+
+    resetCourseForm() {
     }
 }

@@ -5,9 +5,6 @@ export class DashboardView extends BaseView {
         super('dashboard-view');
     }
 
-    initialize() {
-    }
-
     renderDashboard(user, cards) {
         this.updateElement('#welcome-username', user.username);
         
@@ -27,9 +24,7 @@ export class DashboardView extends BaseView {
     bindCardClickHandler(handler) {
         this.bindDelegate('.dashboard-card', 'click', (e, card) => {
             const viewName = card?.dataset.view;
-            if (viewName) {
-                handler(viewName);
-            }
+            if (viewName) handler(viewName);
         });
     }
 
@@ -56,9 +51,7 @@ export class DashboardView extends BaseView {
             existingStats.innerHTML = statsHtml;
         } else {
             const welcomeMessage = this.container?.querySelector('.welcome-message');
-            if (welcomeMessage) {
-                welcomeMessage.insertAdjacentHTML('afterend', statsHtml);
-            }
+            if (welcomeMessage) welcomeMessage.insertAdjacentHTML('afterend', statsHtml);
         }
     }
 }

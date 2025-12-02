@@ -6,34 +6,30 @@ export class ApiService {
     async request(endpoint, options = {}) {
         const url = `${this.baseUrl}${endpoint}`;
         const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers
-            },
+            headers: { 'Content-Type': 'application/json', ...options.headers },
             ...options
         };
         const token = localStorage.getItem('authToken');
-        if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
-        }
-        try 
-        {
-            console.log(`API Request: ${url}`);
+        if (token) config.headers['Authorization'] = `Bearer ${token}`;
+        const method = options.method || 'GET';
+        const requestBody = options.body ? JSON.parse(options.body) : null;
+        console.log(`[API Запрос] ${method} ${endpoint}`, requestBody ? { body: requestBody } : '');
+        try {
             const response = await fetch(url, config);
-            console.log(`Response status: ${response.status}`);
+            if (response.status === 401) {
+                this.handleUnauthorized();
+                throw new Error('Сессия истекла. Пожалуйста, войдите снова.');
+            }
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`HTTP ${response.status}: ${errorText}`);
+                const errorData = await response.json().catch(() => ({}));
+                console.error(`[API Ошибка] ${method} ${endpoint}`, { status: response.status, error: errorData });
+                throw new Error(`HTTP ${response.status}`);
             }
             const data = await response.json();
-            console.log(`API Response success:`, data);
+            console.log(`[API Ответ] ${method} ${endpoint}`, data);
             return data;
-            
         } catch (error) {
-            console.error(`API request failed for ${url}:`, error);
-            if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-                throw new Error('Не удалось подключиться к серверу.');
-            }
+            console.error(`[API Ошибка] ${method} ${endpoint}`, error.message);
             throw error;
         }
     }
@@ -44,36 +40,8 @@ export class ApiService {
         window.dispatchEvent(new CustomEvent('auth-expired'));
     }
 
-    async get(endpoint) {
-        return this.request(endpoint);
-    }
-
-    async post(endpoint, data) {
-        return this.request(endpoint, {
-            method: 'POST',
-            body: JSON.stringify(data)
-        });
-    }
-
-    async put(endpoint, data) {
-        return this.request(endpoint, {
-            method: 'PUT',
-            body: JSON.stringify(data)
-        });
-    }
-
-    async delete(endpoint) {
-        return this.request(endpoint, {
-            method: 'DELETE'
-        });
-    }
-
-    async healthCheck() {
-        try {
-            const response = await this.get('/health');
-            return response.status === 'OK';
-        } catch (error) {
-            return false;
-        }
-    }
+    async get(endpoint) { return this.request(endpoint); }
+    async post(endpoint, data) { return this.request(endpoint, { method: 'POST', body: JSON.stringify(data) }); }
+    async put(endpoint, data) { return this.request(endpoint, { method: 'PUT', body: JSON.stringify(data) }); }
+    async delete(endpoint) { return this.request(endpoint, { method: 'DELETE' }); }
 }

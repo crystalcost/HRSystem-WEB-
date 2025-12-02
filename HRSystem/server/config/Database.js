@@ -19,11 +19,11 @@ export const connectDB = async () => {
   try {
     pool = mysql.createPool(dbConfig);
     const connection = await pool.getConnection();
-    console.log('Connected to MySQL database');
+    console.log('Подключение к базе данных MySQL успешно');
     connection.release();
     return pool;
   } catch (error) {
-    console.error('Database connection failed:', error.message);
+    console.error('Ошибка подключения к базе данных:', error.message);
     process.exit(1);
   }
 };

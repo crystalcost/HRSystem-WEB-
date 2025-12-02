@@ -7,38 +7,15 @@ export class User {
         this.lastName = data.lastName || '';
         this.role = data.role || {};
         this.password = data.password || '';
-        this.fullName = data.fullName || '';
-        this.roleName = data.roleName || '';
-    }
-
-    get displayName() {
-        if (this.fullName) return this.fullName;
-        return `${this.firstName} ${this.lastName}`.trim() || this.username;
     }
 
     validate() {
         const errors = [];
-        
-        if (!this.username || this.username.length < 3) {
-            errors.push('Логин должен содержать минимум 3 символа');
-        }
-        
-        if (!this.email || !this.isValidEmail(this.email)) {
-            errors.push('Некорректный email адрес');
-        }
-        
-        if (!this.firstName || this.firstName.trim().length === 0) {
-            errors.push('Имя обязательно для заполнения');
-        }
-        
-        if (!this.lastName || this.lastName.trim().length === 0) {
-            errors.push('Фамилия обязательна для заполнения');
-        }
-        
-        if (this.password && this.password.length < 6) {
-            errors.push('Пароль должен содержать минимум 6 символов');
-        }
-        
+        if (!this.username || this.username.length < 3) errors.push('Логин должен содержать минимум 3 символа');
+        if (!this.email || !this.isValidEmail(this.email)) errors.push('Некорректный email адрес');
+        if (!this.firstName || this.firstName.trim().length === 0) errors.push('Имя обязательно для заполнения');
+        if (!this.lastName || this.lastName.trim().length === 0) errors.push('Фамилия обязательна для заполнения');
+        if (this.password && this.password.length < 6) errors.push('Пароль должен содержать минимум 6 символов');
         return errors;
     }
 
@@ -48,14 +25,13 @@ export class User {
     }
 
     toCreateDTO() {
-        const roleId = typeof this.role === 'number' ? this.role : (this.role?.id || 3);
         return {
             username: this.username,
             password: this.password,
             email: this.email,
             firstName: this.firstName,
             lastName: this.lastName,
-            roleId: roleId
+            roleId: this.roleId || 3
         };
     }
 
@@ -65,7 +41,7 @@ export class User {
             email: this.email,
             firstName: this.firstName,
             lastName: this.lastName,
-            roleId: this.role.id || this.role,
+            roleId: parseInt(this.roleId) || 3,
             password: this.password || undefined
         };
     }
@@ -78,6 +54,7 @@ export class User {
             firstName: apiData.firstName,
             lastName: apiData.lastName,
             role: apiData.role,
+            roleId: apiData.role?.id || apiData.roleId,
             fullName: apiData.fullName,
             roleName: apiData.roleName
         });

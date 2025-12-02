@@ -5,9 +5,6 @@ export class SelfAssessmentView extends BaseView {
         super('self-assessment-view');
     }
 
-    initialize() {
-    }
-
     renderAssessments(assessments) {
         const tbody = this.container?.querySelector('#assessments-tbody');
         if (!tbody) return;
@@ -29,7 +26,7 @@ export class SelfAssessmentView extends BaseView {
                     <div class="skill-level">
                         <span class="level-number">${assessment.skillLevel}/10</span>
                         <div class="level-bar">
-                            <div class="level-fill" style="width: ${assessment.getProgressPercentage ? assessment.getProgressPercentage() : (assessment.skillLevel * 10)}%"></div>
+                            <div class="level-fill" style="width: ${(assessment.skillLevel * 10)}%"></div>
                         </div>
                     </div>
                 </td>
@@ -37,7 +34,7 @@ export class SelfAssessmentView extends BaseView {
                 <td>
                     <div class="action-buttons">
                         <button class="btn btn-danger btn-sm" data-action="delete" data-assessment-id="${assessment.assessmentId}">
-                            🗑️ Удалить
+                            Удалить
                         </button>
                     </div>
                 </td>
@@ -60,15 +57,12 @@ export class SelfAssessmentView extends BaseView {
             const skillSelect = this.container?.querySelector('#assessment-skill');
             const levelInput = this.container?.querySelector('#assessment-level');
 
-            if (!skillSelect || !levelInput) {
-                return;
-            }
+            if (!skillSelect || !levelInput) return;
 
             const assessmentData = {
                 skillName: skillSelect.value,
                 skillLevel: parseInt(levelInput.value)
             };
-
             handler(assessmentData);
         });
     }
@@ -77,10 +71,7 @@ export class SelfAssessmentView extends BaseView {
         this.bindDelegate('[data-action]', 'click', (e, button) => {
             const action = button.dataset.action;
             const assessmentId = parseInt(button.dataset.assessmentId);
-            
-            if (action && assessmentId) {
-                handler(action, assessmentId);
-            }
+            if (action && assessmentId) handler(action, assessmentId);
         });
     }
 
@@ -88,9 +79,12 @@ export class SelfAssessmentView extends BaseView {
         return `
             <tr>
                 <td colspan="4" class="empty-state">
-                    <div class="icon">${icon}</div>
+                    <div class="icon">
+                        <img src="resources/images/self.png" alt="Самооценки" class="empty-icon"
+                             onerror="this.style.display='none'; this.parentNode.innerHTML='${icon}'">
+                    </div>
                     <h3>${message}</h3>
-                    <p>Начните с добавления первой самооценки</p>
+                    <p>Начните с подачи первой самооценки</p>
                 </td>
             </tr>
         `;
@@ -107,7 +101,6 @@ export class SelfAssessmentView extends BaseView {
     resetForm() {
         const skillSelect = this.container?.querySelector('#assessment-skill');
         const levelInput = this.container?.querySelector('#assessment-level');
-        
         if (skillSelect) skillSelect.value = 'Коммуникация';
         if (levelInput) levelInput.value = '5';
     }

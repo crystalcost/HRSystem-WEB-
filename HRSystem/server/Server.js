@@ -10,6 +10,7 @@ import FeedbackRoutes from './routes/Feedback.js';
 import SelfAssessmentRoutes from './routes/SelfAssessments.js';
 import TrainingRoutes from './routes/Training.js';
 import { connectDB } from './config/Database.js';
+import { authenticateToken } from './middleware/Auth.js';
 
 dotenv.config();
 
@@ -25,18 +26,24 @@ app.use(cors({
   allowedHeaders: ['*'],
   credentials: true
 }));
-
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../client')));
-
+app.use('/api', (req, res, next) => {
+    console.log(`[API Запрос] ${req.method} ${req.path}`, req.body && Object.keys(req.body).length > 0 ? { body: req.body } : '');
+    const originalJson = res.json;
+    res.json = function(data) {
+        console.log(`[API Ответ] ${req.method} ${req.path}`, data);
+        return originalJson.call(this, data);
+    };
+    next();
+});
 connectDB();
-
 app.use('/api/auth', AuthRoutes);
-app.use('/api/users', UserRoutes);
-app.use('/api/evaluations', EvaluationRoutes);
-app.use('/api/feedback', FeedbackRoutes);
-app.use('/api/self-assessments', SelfAssessmentRoutes);
-app.use('/api/training-requests', TrainingRoutes);
+app.use('/api/users', authenticateToken, UserRoutes);
+app.use('/api/evaluations', authenticateToken, EvaluationRoutes);
+app.use('/api/feedback', authenticateToken, FeedbackRoutes);
+app.use('/api/self-assessments', authenticateToken, SelfAssessmentRoutes);
+app.use('/api/training-requests', authenticateToken, TrainingRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ 
@@ -51,7 +58,7 @@ app.get('*', (req, res) => {
 });
 
 app.use((error, req, res, next) => {
-  console.error('Unhandled error:', error);
+  console.error('Необработанная ошибка сервера:', error);
   res.status(500).json({ 
     status: 'FAILED', 
     message: 'Внутренняя ошибка сервера' 
@@ -66,5 +73,5 @@ app.use((req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`HR System Server running on http://localhost:${PORT}`);
+  console.log(`Сервер HR System запущен на http://localhost:${PORT}`);
 });

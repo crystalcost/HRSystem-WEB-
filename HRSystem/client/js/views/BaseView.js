@@ -6,9 +6,7 @@ export class BaseView {
     }
 
     show() {
-        if (this.container) {
-            this.container.classList.add('active');
-        }
+        if (this.container) this.container.classList.add('active');
         if (!this.isInitialized) {
             this.initialize();
             this.isInitialized = true;
@@ -17,25 +15,16 @@ export class BaseView {
     }
 
     hide() {
-        if (this.container) {
-            this.container.classList.remove('active');
-        }
+        if (this.container) this.container.classList.remove('active');
         this.onHide();
     }
 
-    initialize() {
-    }
-
-    onShow() {
-    }
-
-    onHide() {
-    }
+    initialize() {}
+    onShow() {}
+    onHide() {}
 
     render(template) {
-        if (this.container) {
-            this.container.innerHTML = template;
-        }
+        if (this.container) this.container.innerHTML = template;
     }
 
     bindEvent(selector, event, handler) {
@@ -50,9 +39,7 @@ export class BaseView {
         if (this.container) {
             const delegateHandler = (e) => {
                 const target = e.target.closest(selector);
-                if (target && this.container.contains(target)) {
-                    handler(e, target);
-                }
+                if (target && this.container.contains(target)) handler(e, target);
             };
             this.container.addEventListener(event, delegateHandler);
             this.eventListeners.push({ element: this.container, event, handler: delegateHandler });
@@ -61,16 +48,12 @@ export class BaseView {
 
     updateElement(selector, content) {
         const element = this.container?.querySelector(selector);
-        if (element) {
-            element.innerHTML = content;
-        }
+        if (element) element.innerHTML = content;
     }
 
     setElementValue(selector, value) {
         const element = this.container?.querySelector(selector);
-        if (element) {
-            element.value = value;
-        }
+        if (element) element.value = value;
     }
 
     getElementValue(selector) {
@@ -80,30 +63,22 @@ export class BaseView {
 
     showElement(selector) {
         const element = this.container?.querySelector(selector);
-        if (element) {
-            element.style.display = '';
-        }
+        if (element) element.style.display = '';
     }
 
     hideElement(selector) {
         const element = this.container?.querySelector(selector);
-        if (element) {
-            element.style.display = 'none';
-        }
+        if (element) element.style.display = 'none';
     }
 
     addClass(selector, className) {
         const element = this.container?.querySelector(selector);
-        if (element) {
-            element.classList.add(className);
-        }
+        if (element) element.classList.add(className);
     }
 
     removeClass(selector, className) {
         const element = this.container?.querySelector(selector);
-        if (element) {
-            element.classList.remove(className);
-        }
+        if (element) element.classList.remove(className);
     }
 
     destroy() {

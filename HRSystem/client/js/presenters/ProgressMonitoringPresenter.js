@@ -18,14 +18,6 @@ export class ProgressMonitoringPresenter {
         this.bindHandlers();
     }
 
-    hide() {
-        this.view.hide();
-    }
-
-    onViewShow() {
-        this.loadData();
-    }
-
     bindHandlers() {
         this.view.bindEmployeeSelectHandler((employeeId) => this.handleEmployeeSelect(employeeId));
         this.view.bindProgressChartHandler(() => this.showProgressChart());
@@ -34,38 +26,27 @@ export class ProgressMonitoringPresenter {
     async loadData() {
         try {
             this.view.showLoading(true);
-
-            
             const managerEvaluations = await this.apiService.get(`/evaluations/manager/${this.app.currentUser.id}`);
-            
-            
             const employeeIds = [...new Set(managerEvaluations
                 .map(evaluation => evaluation.user?.id)
                 .filter(id => id && id !== this.app.currentUser.id)
             )];
             
-            
             this.employees = [];
             for (const employeeId of employeeIds) {
                 try {
                     const employee = await this.apiService.get(`/users/${employeeId}`);
-                    if (employee && employee.id) {
-                        this.employees.push(employee);
-                    }
+                    if (employee && employee.id) this.employees.push(employee);
                 } catch (error) {
-                    console.warn(`Не удалось загрузить сотрудника ${employeeId}:`, error);
                 }
             }
 
-            
             this.employees = this.employees.filter((employee, index, self) => 
                 index === self.findIndex(emp => emp.id === employee.id)
             );
 
             this.view.renderProgressMonitoring(this.employees);
-
         } catch (error) {
-            console.error('❌ Ошибка загрузки данных мониторинга:', error);
             this.app.showNotification('Ошибка загрузки данных: ' + error.message, 'error');
         } finally {
             this.view.showLoading(false);
@@ -74,7 +55,6 @@ export class ProgressMonitoringPresenter {
 
     async handleEmployeeSelect(employeeId) {
         this.currentEmployeeId = employeeId;
-        
         if (!employeeId) {
             this.view.hideKpiSection();
             return;
@@ -82,25 +62,10 @@ export class ProgressMonitoringPresenter {
     
         try {
             this.view.showLoading(true);
-    
-            
             const evaluationsData = await this.apiService.get(`/evaluations/user/${employeeId}`);
-            
-            
-            this.evaluations = evaluationsData.map(evalData => {
-                const evaluation = new Evaluation(evalData);
-                
-                if (typeof evaluation.calculateOverallKpi === 'function' && !evaluation.overallKpi) {
-                    evaluation.calculateOverallKpi();
-                }
-                return evaluation;
-            });
-    
-            
+            this.evaluations = evaluationsData.map(evalData => Evaluation.fromApiData(evalData));
             this.view.showKPIHistory(this.evaluations);
-    
         } catch (error) {
-            console.error('❌ Ошибка загрузки оценок сотрудника:', error);
             this.app.showNotification('Ошибка загрузки оценок сотрудника: ' + error.message, 'error');
         } finally {
             this.view.showLoading(false);
@@ -112,7 +77,6 @@ export class ProgressMonitoringPresenter {
             this.app.showNotification('Нет данных для построения графика', 'warning');
             return;
         }
-
         this.view.showProgressChart(this.evaluations);
     }
 }

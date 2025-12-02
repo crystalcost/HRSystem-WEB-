@@ -7,9 +7,6 @@ export class ProgressMonitoringView extends BaseView {
         this.onProgressChart = null;
     }
 
-    initialize() {
-    }
-
     renderProgressMonitoring(employees) {
         const container = this.container?.querySelector('#progress-monitoring-content');
         if (!container) return;
@@ -43,10 +40,6 @@ export class ProgressMonitoringView extends BaseView {
                 </div>
             </div>
         `;
-
-        
-        this.bindEmployeeSelectHandler(this.onEmployeeSelect);
-        this.bindProgressChartHandler(this.onProgressChart);
     }
 
     showKPIHistory(evaluations) {
@@ -60,10 +53,7 @@ export class ProgressMonitoringView extends BaseView {
             container.innerHTML = '<p class="no-data">Нет данных об оценках</p>';
             actions.style.display = 'none';
         } else {
-            
-            const sortedEvaluations = [...evaluations].sort((a, b) => 
-                new Date(b.evaluationDate) - new Date(a.evaluationDate)
-            );
+            const sortedEvaluations = [...evaluations].sort((a, b) => new Date(b.evaluationDate) - new Date(a.evaluationDate));
 
             container.innerHTML = `
                 <table class="kpi-history-table">
@@ -99,9 +89,6 @@ export class ProgressMonitoringView extends BaseView {
             `;
 
             actions.style.display = 'block';
-            
-            
-            this.bindProgressChartHandler(this.onProgressChart);
         }
 
         section.style.display = 'block';
@@ -146,70 +133,44 @@ export class ProgressMonitoringView extends BaseView {
                 </div>
             </div>
         `;
-
         window.app.showModal(chartHtml);
-
-        
-        setTimeout(() => {
-            this.renderChart(evaluations);
-        }, 100);
+        setTimeout(() => this.renderChart(evaluations), 100);
     }
 
     renderChart(evaluations) {
         const canvas = document.getElementById('progressChartCanvas');
         if (!canvas) return;
-    
-        
         const baseWidth = 500;
         const baseHeight = 350;
-        
-        
         const dataPoints = evaluations.length;
         const canvasWidth = Math.max(baseWidth, dataPoints * 70);
         const canvasHeight = baseHeight;
-        
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
-    
         const ctx = canvas.getContext('2d');
-        
-        
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-        
-        const sortedEvaluations = [...evaluations].sort((a, b) => 
-            new Date(a.evaluationDate) - new Date(b.evaluationDate)
-        );
-    
+        const sortedEvaluations = [...evaluations].sort((a, b) => new Date(a.evaluationDate) - new Date(b.evaluationDate));
         if (sortedEvaluations.length === 0) return;
-    
         const dates = sortedEvaluations.map(evaluation => 
             new Date(evaluation.evaluationDate).toLocaleDateString('ru-RU', {
                 day: '2-digit',
                 month: '2-digit'
             })
         );
-        
         const overallKpi = sortedEvaluations.map(evaluation => evaluation.overallKpi);
         const completedTasks = sortedEvaluations.map(evaluation => evaluation.kpiCompletedTasks);
         const fixTime = sortedEvaluations.map(evaluation => evaluation.kpiFixTime);
         const testCoverage = sortedEvaluations.map(evaluation => evaluation.kpiTestCoverage);
         const timeliness = sortedEvaluations.map(evaluation => evaluation.kpiTimeliness);
-    
-        
         const paddingTop = 30;
-        const paddingBottom = 35; 
+        const paddingBottom = 35;
         const paddingLeft = 60;
         const paddingRight = 20;
         const chartWidth = canvas.width - paddingLeft - paddingRight;
         const chartHeight = canvas.height - paddingTop - paddingBottom;
         const maxValue = 100;
-    
-        
         ctx.strokeStyle = '#e9ecef';
         ctx.lineWidth = 1;
-        
-        
         const xStep = chartWidth / Math.max(1, (dates.length - 1));
         for (let i = 0; i < dates.length; i++) {
             const x = paddingLeft + i * xStep;
@@ -218,8 +179,6 @@ export class ProgressMonitoringView extends BaseView {
             ctx.lineTo(x, paddingTop + chartHeight);
             ctx.stroke();
         }
-        
-        
         for (let i = 0; i <= 5; i++) {
             const y = paddingTop + (chartHeight / 5) * i;
             ctx.beginPath();
@@ -227,47 +186,31 @@ export class ProgressMonitoringView extends BaseView {
             ctx.lineTo(paddingLeft + chartWidth, y);
             ctx.stroke();
         }
-    
-        
         const getY = (value) => paddingTop + chartHeight - (value / maxValue) * chartHeight;
         const getX = (index) => paddingLeft + index * xStep;
-    
-        
         const drawLine = (data, color) => {
             if (data.length < 2) return;
-    
             ctx.strokeStyle = color;
             ctx.lineWidth = 2;
             ctx.beginPath();
-    
             data.forEach((value, index) => {
                 const x = getX(index);
                 const y = getY(value);
-                
-                if (index === 0) {
-                    ctx.moveTo(x, y);
-                } else {
-                    ctx.lineTo(x, y);
-                }
+                if (index === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
             });
-    
             ctx.stroke();
         };
-    
-        
         drawLine(overallKpi, '#007bff');
         drawLine(completedTasks, '#28a745');
         drawLine(fixTime, '#ffc107');
         drawLine(testCoverage, '#dc3545');
         drawLine(timeliness, '#6f42c1');
-    
-        
         const drawPoints = (data, color) => {
             ctx.fillStyle = color;
             data.forEach((value, index) => {
                 const x = getX(index);
                 const y = getY(value);
-                
                 ctx.beginPath();
                 ctx.arc(x, y, 3, 0, 2 * Math.PI);
                 ctx.fill();
@@ -276,36 +219,25 @@ export class ProgressMonitoringView extends BaseView {
                 ctx.stroke();
             });
         };
-    
         drawPoints(overallKpi, '#007bff');
         drawPoints(completedTasks, '#28a745');
         drawPoints(fixTime, '#ffc107');
         drawPoints(testCoverage, '#dc3545');
         drawPoints(timeliness, '#6f42c1');
-    
-        
         ctx.fillStyle = '#333';
         ctx.font = '10px Arial';
         ctx.textAlign = 'center';
-        
-        
         dates.forEach((date, index) => {
             const x = getX(index);
             ctx.fillText(date, x, paddingTop + chartHeight + 15);
         });
-    
-        
-        ctx.fillText('Дата оценки', paddingLeft + chartWidth / 2, paddingTop + chartHeight + 30); 
-    
-        
+        ctx.fillText('Дата оценки', paddingLeft + chartWidth / 2, paddingTop + chartHeight + 30);
         ctx.textAlign = 'right';
         ctx.textBaseline = 'middle';
         for (let i = 0; i <= 100; i += 20) {
             const y = getY(i);
             ctx.fillText(i + '%', paddingLeft - 10, y);
         }
-    
-        
         ctx.save();
         ctx.translate(paddingLeft - 50, paddingTop + chartHeight / 2);
         ctx.rotate(-Math.PI / 2);
@@ -320,9 +252,7 @@ export class ProgressMonitoringView extends BaseView {
         if (select && handler) {
             select.replaceWith(select.cloneNode(true));
             const newSelect = this.container?.querySelector('#progress-employee-select');
-            newSelect.addEventListener('change', (e) => {
-                handler(e.target.value);
-            });
+            newSelect.addEventListener('change', (e) => handler(e.target.value));
         }
     }
 
@@ -332,9 +262,7 @@ export class ProgressMonitoringView extends BaseView {
         if (button && handler) {
             button.replaceWith(button.cloneNode(true));
             const newButton = this.container?.querySelector('#show-progress-chart-btn');
-            newButton.addEventListener('click', () => {
-                handler();
-            });
+            newButton.addEventListener('click', () => handler());
         }
     }
 
@@ -345,12 +273,6 @@ export class ProgressMonitoringView extends BaseView {
 
     showLoading(loading) {
         const container = this.container?.querySelector('#progress-monitoring-content');
-        if (container) {
-            if (loading) {
-                container.classList.add('loading');
-            } else {
-                container.classList.remove('loading');
-            }
-        }
+        if (container) loading ? container.classList.add('loading') : container.classList.remove('loading');
     }
 }

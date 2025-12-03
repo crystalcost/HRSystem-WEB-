@@ -1,5 +1,5 @@
 import express from 'express';
-import cors from 'cors';
+import cors from './middleware/Cors.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -20,24 +20,12 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:8080'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['*'],
-  credentials: true
-}));
+app.use(cors);
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../client')));
-app.use('/api', (req, res, next) => {
-    console.log(`[API Запрос] ${req.method} ${req.path}`, req.body && Object.keys(req.body).length > 0 ? { body: req.body } : '');
-    const originalJson = res.json;
-    res.json = function(data) {
-        console.log(`[API Ответ] ${req.method} ${req.path}`, data);
-        return originalJson.call(this, data);
-    };
-    next();
-});
+
 connectDB();
+
 app.use('/api/auth', AuthRoutes);
 app.use('/api/users', authenticateToken, UserRoutes);
 app.use('/api/evaluations', authenticateToken, EvaluationRoutes);
@@ -48,7 +36,7 @@ app.use('/api/training-requests', authenticateToken, TrainingRoutes);
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
-    message: 'HR System Server is running',
+    message: 'HR System Server выполняется.',
     timestamp: new Date().toISOString()
   });
 });
